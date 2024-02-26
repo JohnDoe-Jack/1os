@@ -5,3 +5,9 @@
 ## 外部ツール
 
 [書き込みツール](https://cubeatsystems.com/kz_h8write/)
+
+### 書き込み方法
+
+``` bash
+sudo make write
+```
