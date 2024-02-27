@@ -10,14 +10,16 @@
 
 struct h8_3069f_sci
 {
-  volatile uint8 smr;
-  volatile uint8 brr;
-  volatile uint8 scr;
-  volatile uint8 tdr;
-  volatile uint8 ssr;
-  volatile uint8 rdr;
-  volatile uint8 scmr;
+  volatile uint8 smr;   // Serial mode register
+  volatile uint8 brr;   // Bit rate register
+  volatile uint8 scr;   // Serial control register (Enable/Disable, Interrupt, etc.)
+  volatile uint8 tdr;   // Transmit data register (Write)
+  volatile uint8 ssr;   // Serial status register (If data is sent, received, etc.)
+  volatile uint8 rdr;   // Receive data register (Read)
+  volatile uint8 scmr;  // Smart card mode register
 };
+
+// Serial mode register
 
 #define H8_3069F_SCI_SMR_CKS_PER1 (0 << 0)
 #define H8_3069F_SCI_SMR_CKS_PER4 (1 << 0)
@@ -30,6 +32,8 @@ struct h8_3069f_sci
 #define H8_3069F_SCI_SMR_CHR (1 << 6)
 #define H8_3069F_SCI_SMR_CA (1 << 7)
 
+// Serial control register
+
 #define H8_3069F_SCI_SCR_CKE0 (1 << 0)
 #define H8_3069F_SCI_SCR_CKE1 (1 << 1)
 #define H8_3069F_SCI_SCR_TEIE (1 << 2)
@@ -38,6 +42,8 @@ struct h8_3069f_sci
 #define H8_3069F_SCI_SCR_TE (1 << 5)   // Transmit enable
 #define H8_3069F_SCI_SCR_RIE (1 << 6)  // Receive interrupt enable
 #define H8_3069F_SCI_SCR_TIE (1 << 7)  // Transmit interrupt enable
+
+// Serial status register
 
 #define H8_3069F_SCI_SSR_MPBT (1 << 0)
 #define H8_3069F_SCI_SSR_MPB (1 << 1)
