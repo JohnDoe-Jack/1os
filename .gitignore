@@ -1,3 +1,4 @@
 *.elf
 *.mot
 *.o
+kzload
