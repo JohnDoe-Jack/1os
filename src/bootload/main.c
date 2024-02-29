@@ -1,6 +1,7 @@
 #include "defines.h"
 #include "lib.h"
 #include "serial.h"
+#include "xmodem.h"
 
 static int init(void)
 {
@@ -17,40 +18,69 @@ static int init(void)
   return 0;
 }
 
-int global_data = 0x10;
-int global_bss;
-static int static_data = 0x20;
-static int static_bss;
-
-static void printval(void)
+static int dump(unsigned char * buf, long size)
 {
-  puts((unsigned char *)"global_data = ");
-  putxval(global_data, 0);
+  long i;
+
+  if (size < 0) {
+    puts((unsigned char *)"no data.\n");
+    return -1;
+  }
+
+  for (i = 0; i < size; i++) {
+    putxval(buf[i], 2);
+    if ((i & 0xf) == 15) {
+      puts((unsigned char *)"\n");
+    } else {
+      if ((i & 0xf) == 7) puts((unsigned char *)" ");
+      puts((unsigned char *)" ");
+    }
+  }
   puts((unsigned char *)"\n");
-  puts((unsigned char *)"global_bss = ");
-  putxval(global_bss, 0);
-  puts((unsigned char *)"\n");
-  puts((unsigned char *)"static_data = ");
-  putxval(static_data, 0);
-  puts((unsigned char *)"\n");
-  puts((unsigned char *)"static_bss = ");
-  putxval(static_bss, 0);
-  puts((unsigned char *)"\n");
+
+  return 0;
+}
+
+static void wait()
+{
+  volatile long i;
+  for (i = 0; i < 300000; i++)
+    ;
 }
 
 int main(void)
 {
+  static unsigned char buf[16];
+  static long size = -1;
+  static unsigned char * loadbuf = NULL;
+  extern int buffer_start;  // リンカスクリプトで定義されるバッファ
+
   init();
-  puts((unsigned char *)"Hello World\n");
 
-  printval();
-  puts((unsigned char *)"overwrite variables\n");
-  global_data = 0x20;
-  global_bss = 0x30;
-  static_data = 0x40;
-  static_bss = 0x50;
-  printval();
+  puts((unsigned char *)"kzload (kozos boot loader) started.\n");
 
+  while (1) {
+    puts((unsigned char *)"kzload> ");
+    gets(buf);
+
+    if (!strcmp(buf, (unsigned char *)"load")) {  // XMODEMでのファイルのダウンロード
+      loadbuf = (unsigned char *)(&buffer_start);
+      size = xmodem_recv(loadbuf);
+      wait();
+      if (size < 0) {
+        puts((unsigned char *)"\nXMODEM receive error!\n");
+      } else {
+        puts((unsigned char *)"\nXMODEM receive succeeded.\n");
+      }
+    } else if (!strcmp(buf, (unsigned char *)"dump")) {  // メモリの16進ダンプ出力
+      puts((unsigned char *)"size: ");
+      putxval(size, 0);
+      puts((unsigned char *)"\n");
+      dump(loadbuf, size);
+    } else {
+      puts((unsigned char *)"unknown.\n");
+    }
+  }
   while (1)
     ;
   return 0;

@@ -10,12 +10,35 @@ int putc(unsigned char c)
   return serial_send_byte(SERIAL_DEFAULT_DEVICE, c);
 }
 
+// Receive a character from the serial port
+unsigned char getc(void)
+{
+  unsigned char c = serial_recv_byte(SERIAL_DEFAULT_DEVICE);
+  c = (c == '\r') ? '\n' : c;
+  putc(c);
+  return c;
+}
+
 // Send a string to the serial port
 int puts(unsigned char * str)
 {
   while (*str) putc(*(str++));
 
   return 0;
+}
+
+// Receive a string from the serial port
+int gets(unsigned char * buf)
+{
+  int i = 0;
+  unsigned char c;
+
+  do {
+    c = getc();
+    if (c == '\n') c = '\0';
+    buf[i++] = c;
+  } while (c);
+  return i - 1;
 }
 
 void * memset(void * b, int c, long len)
@@ -62,7 +85,7 @@ char * strcpy(char * dst, const char * src)
   return d;
 }
 
-int strcmp(const char * s1, const char * s2)
+int strcmp(const unsigned char * s1, const unsigned char * s2)
 {
   while (*s1 || *s2) {
     if (*s1 != *s2) return (*s1 > *s2) ? 1 : -1;
@@ -72,7 +95,7 @@ int strcmp(const char * s1, const char * s2)
   return 0;
 }
 
-int strncmp(const char * s1, const char * s2, int len)
+int strncmp(const unsigned char * s1, const unsigned char * s2, int len)
 {
   while ((*s1 || *s2) && (len > 0)) {
     if (*s1 != *s2) return (*s1 > *s2) ? 1 : -1;
