@@ -59,4 +59,5 @@ write	:	$(TARGET).mot
 clean	:
 				rm -f $(OBJS) $(TARGET) $(TARGET).elf $(TARGET).mot
 
-load : $(KZXMODEM) $(TARGET) $(H8WRITE_SERDEV)
+xmodem : $(TARGET)
+		$(KZXMODEM) $(TARGET) $(H8WRITE_SERDEV)
