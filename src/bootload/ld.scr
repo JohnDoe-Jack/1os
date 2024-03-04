@@ -43,7 +43,7 @@ SECTIONS
                 *(.data)
                 _edata = .;
         } > data AT> rom /*.dataセクションのVAとPAを異なるアドレスにする*/
-
+        _data_start_load = LOADADDR(.data); /*.dataセクションのロードアドレスを取得する*/
         .bss  : {
                 _bss_start = .;
                 *(.bss)

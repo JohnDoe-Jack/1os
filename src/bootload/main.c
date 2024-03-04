@@ -6,10 +6,10 @@
 static int init(void)
 {
   // 以下はリンカスクリプトで定義してあるシンボル
-  extern int erodata, data_start, edata, bss_start, ebss;
+  extern int data_start_load, data_start, edata, bss_start, ebss;
 
   // データ領域とBSS領域を初期化
-  memcpy(&data_start, &erodata, (long)&edata - (long)&data_start);
+  memcpy(&data_start, &data_start_load, (long)&edata - (long)&data_start);
   memset(&bss_start, 0, (long)&ebss - (long)&bss_start);
 
   // シリアルの初期化
