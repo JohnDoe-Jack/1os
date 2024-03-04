@@ -19,7 +19,7 @@ KZXMODEM = ../../tools/kz_xmodem/kz_xmodem
 H8WRITE_SERDEV = /dev/ttyUSB0
 
 OBJS = vector.o startup.o main.o
-OBJS += lib.o serial.o xmodem.o
+OBJS += lib.o serial.o xmodem.o elf.o
 
 TARGET = kzload# 生成する実行形式のファイル名
 
@@ -59,5 +59,5 @@ write	:	$(TARGET).mot
 clean	:
 				rm -f $(OBJS) $(TARGET) $(TARGET).elf $(TARGET).mot
 
-xmodem : $(TARGET)
-		$(KZXMODEM) $(TARGET) $(H8WRITE_SERDEV)
+xmodem : $(TARGET).elf
+		$(KZXMODEM) $(TARGET).elf $(H8WRITE_SERDEV)

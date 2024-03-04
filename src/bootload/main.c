@@ -1,4 +1,5 @@
 #include "defines.h"
+#include "elf.h"
 #include "lib.h"
 #include "serial.h"
 #include "xmodem.h"
@@ -77,6 +78,8 @@ int main(void)
       putxval(size, 0);
       puts((unsigned char *)"\n");
       dump(loadbuf, size);
+    } else if (!strcmp(buf, (unsigned char *)"run")) {  // ELF形式ファイルの実行
+      elf_load((char *)loadbuf);
     } else {
       puts((unsigned char *)"unknown.\n");
     }
