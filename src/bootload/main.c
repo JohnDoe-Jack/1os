@@ -54,6 +54,8 @@ int main(void)
   static unsigned char buf[16];
   static long size = -1;
   static unsigned char * loadbuf = NULL;
+  char * entry_point;
+  void (*f)(void);
   extern int buffer_start;  // リンカスクリプトで定義されるバッファ
 
   init();
@@ -79,7 +81,17 @@ int main(void)
       puts((unsigned char *)"\n");
       dump(loadbuf, size);
     } else if (!strcmp(buf, (unsigned char *)"run")) {  // ELF形式ファイルの実行
-      elf_load((char *)loadbuf);
+      entry_point = elf_load(loadbuf);                  // メモリ上に展開
+      if (!entry_point) {
+        puts((unsigned char *)"run error!\n");
+      } else {
+        puts((unsigned char *)"starting from entry point: ");
+        putxval((unsigned long)entry_point, 0);
+        puts((unsigned char *)"\n");
+        f = (void (*)(void))entry_point;
+        f();  // 関数呼び出し
+        /* ここには返ってこない*/
+      }
     } else {
       puts((unsigned char *)"unknown.\n");
     }

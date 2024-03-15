@@ -84,33 +84,22 @@ static int elf_load_program(struct elf_header * header)
        elf_program_header *)((char *)header + header->program_header_offset + header->program_header_size * i);
     if (phdr->type != 1) continue;
 
-    // 取り敢えず実際にロードせずにセグメントの情報を表示
-    putxval(phdr->offset, 6);
-    puts((unsigned char *)" ");
-    putxval(phdr->virtual_addr, 8);
-    puts((unsigned char *)" ");
-    putxval(phdr->physical_addr, 8);
-    puts((unsigned char *)" ");
-    putxval(phdr->file_size, 5);
-    puts((unsigned char *)" ");
-    putxval(phdr->memory_size, 5);
-    puts((unsigned char *)" ");
-    putxval(phdr->flags, 2);
-    puts((unsigned char *)" ");
-    putxval(phdr->align, 2);
-    puts((unsigned char *)"\n");
+    memcpy((char *)phdr->physical_addr, (char *)header + phdr->offset, phdr->file_size);
+    memset((char *)phdr->physical_addr + phdr->file_size, 0, phdr->memory_size - phdr->file_size);
   }
 
   return 0;
 }
 
-int elf_load(char * buf)
+char * elf_load(unsigned char * buf)
 {
   struct elf_header * header = (struct elf_header *)buf;
 
-  if (elf_check(header) < 0) return -1;
+  // ELFヘッダーのチェック
+  if (elf_check(header) < 0) return NULL;
 
-  if (elf_load_program(header) < 0) return -1;
+  // セグメント単位でのロード
+  if (elf_load_program(header) < 0) return NULL;
 
-  return 0;
+  return (char *)header->entry_point;
 }
