@@ -13,8 +13,8 @@ OBJDUMP	= $(BINDER)/$(ADDNAME)objdump
 RANLIB	= $(BINDER)/$(ADDNAME)ranlib
 STRIP	= $(BINDER)/$(ADDNAME)strip
 
-H8WRITE = ../../tools/h8write/kz_h8write
-KZXMODEM = ../../tools/kz_xmodem/kz_xmodem
+H8WRITE = ../tools/h8write/kz_h8write
+KZXMODEM = ../tools/kz_xmodem/kz_xmodem
 
 H8WRITE_SERDEV = /dev/ttyUSB0
 
