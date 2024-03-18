@@ -1,0 +1,47 @@
+OUTPUT_FORMAT("elf32-h8300")
+OUTPUT_ARCH(h8300h)
+ENTRY("_start")
+
+MEMORY
+{
+        ramall(rwx)     : o = 0xffbf20, l = 0x004000 /* 16KB RAM */
+        ram(rwx)        : o = 0xffc020, l = 0x003f00 /* RAM */
+        stack(rw)       : o = 0xffff00, l = 0x000000 /* End of RAM */
+}
+
+SECTIONS
+{
+        .text : {
+                _text_start = .;
+                *(.text)
+                _etext = .;
+        } > ram
+
+        .rodata : {
+                _rodata_start = .;
+                *(.strings)
+                *(.rodata)
+                *(.rodata.*)
+                _erodata = .;   
+        } > ram
+
+        .data : {
+                _data_start = .;
+                *(.data)
+                _edata = .;
+        } > ram
+        _data_start_load = LOADADDR(.data);/*  .dataセクションのロードアドレスを取得する */
+        .bss  : {
+                _bss_start = .;
+                *(.bss)
+                *(COMMON)
+                _ebss = .;
+        } >ram /*.bssセクションのVAとPAを異なるアドレスにする*/
+
+        . = ALIGN(4); /* 4バイト境界にアラインする */
+        _end = .; /*セクションの週右端に_endシンボルを配置する*/
+
+        .stack : {
+                _stack = .;
+        } > stack
+}

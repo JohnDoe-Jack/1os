@@ -2,4 +2,5 @@
 *.mot
 *.o
 kzload
+kozos
 build

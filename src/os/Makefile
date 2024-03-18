@@ -13,22 +13,17 @@ OBJDUMP	= $(BINDER)/$(ADDNAME)objdump
 RANLIB	= $(BINDER)/$(ADDNAME)ranlib
 STRIP	= $(BINDER)/$(ADDNAME)strip
 
-H8WRITE = ../tools/h8write/kz_h8write
-KZXMODEM = ../tools/kz_xmodem/kz_xmodem
+OBJS = startup.o main.o
+OBJS += lib.o serial.o
 
-H8WRITE_SERDEV = /dev/ttyUSB0
+TARGET = kozos# 生成する実行形式のファイル名
 
-OBJS = vector.o startup.o main.o
-OBJS += lib.o serial.o xmodem.o elf.o
-
-TARGET = kzload# 生成する実行形式のファイル名
-OS = ../os/kozos
 CFLAGS = -Wall -mh -nostdlib -fno-builtin
 #CFLAGS += -mint32 # int を　32bit にすると掛け算/割り算ができなくなる
 CFLAGS += -I.
 #CFLAGS += -g
 CFLAGS += -Os
-CFLAGS += -DKZLOAD
+CFLAGS += -DKOZOS
 
 LFLAGS = -static -T ld.scr -L. # リンクオプション
 
@@ -48,16 +43,7 @@ $(TARGET)	:	$(OBJS)
 .s.o	:			$<
 						$(CC) -c $(CFLAGS) $<
 
-$(TARGET).mot	:	$(TARGET)
-						$(OBJCOPY) -O srec $(TARGET) $(TARGET).mot
-
-image	:	$(TARGET).mot
-
-write	:	$(TARGET).mot
-				$(H8WRITE) -3069 -f20 $(TARGET).mot $(H8WRITE_SERDEV)
+all: $(TARGET)
 
 clean	:
-				rm -f $(OBJS) $(TARGET) $(TARGET).elf $(TARGET).mot
-
-xmodem : $(OS).elf
-		$(KZXMODEM) $(OS) $(H8WRITE_SERDEV)
+				rm -f $(OBJS) $(TARGET) $(TARGET).elf
